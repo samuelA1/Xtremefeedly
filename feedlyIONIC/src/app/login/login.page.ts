@@ -7,6 +7,7 @@ import { NavController } from '@ionic/angular';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
+  user: any = {};
 
   constructor(private navCtrl: NavController) { }
 
