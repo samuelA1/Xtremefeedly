@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/samuelA1/Xtremefeedly#readme",
   "dependencies": {
+    "async": "^2.6.2",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
