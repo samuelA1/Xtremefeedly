@@ -12,8 +12,10 @@ mongoose.connect(config.db, {useNewUrlParser: true}, err => {
 })
 
 
-
 const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io').listen(server);
+require('./streams')(io);
 
 app.use('/api/auth', authRoute);
 app.use('/api/post', postRoute);
@@ -23,6 +25,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(morgan('dev'));
 app.use(cors());
 
-app.listen(config.port, (err) => {
+server.listen(config.port, (err) => {
     console.log('Connected connected')
 })
