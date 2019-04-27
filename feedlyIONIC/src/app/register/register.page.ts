@@ -1,5 +1,7 @@
+import { AuthService } from './../services/auth.service';
 import { Component, OnInit } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, NavController } from '@ionic/angular';
+import { Storage } from '@ionic/storage'
 
 @Component({
   selector: 'app-register',
@@ -8,13 +10,28 @@ import { AlertController } from '@ionic/angular';
 })
 export class RegisterPage implements OnInit {
 user: any = {};
-  constructor(private alertCtrl: AlertController) { }
+  constructor(private alertCtrl: AlertController,
+     private authService: AuthService,
+     private navCtrl: NavController,
+     private storage: Storage) { }
 
   ngOnInit() {
   }
 
-  register() {
-    this.validate(this.user);
+  async register() {
+    try {
+      if (this.validate(this.user )) {
+        const userInfo = await this.authService.register(this.user);
+        if (userInfo['success']) {
+          this.navCtrl.navigateForward('home');
+          
+        } else {
+          await this.presentAlert(userInfo['message']);
+        }
+      }    
+    } catch (error) {
+      await this.presentAlert(error);
+    }
   }
 
    validate(user: any) {

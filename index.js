@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const authRoute = require('./routes/auth');
 const postRoute = require('./routes/post');
+const mainRoute = require('./routes/main');
 
 mongoose.connect(config.db, {useNewUrlParser: true}, err => {
     err ? console.log('Can not connect to database') : console.log('Connected to database');
@@ -13,18 +14,26 @@ mongoose.connect(config.db, {useNewUrlParser: true}, err => {
 
 
 const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(morgan('dev'));
+
 const server = require('http').createServer(app);
 const io = require('socket.io').listen(server);
 require('./streams')(io);
 
 app.use('/api/auth', authRoute);
 app.use('/api/post', postRoute);
+app.use('/api', mainRoute);
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(morgan('dev'));
-app.use(cors());
+
+
 
 server.listen(config.port, (err) => {
-    console.log('Connected connected')
+    if (err) {
+        console.log(err);
+    } else {
+        console.log('Connected connected');   
+    }
 })

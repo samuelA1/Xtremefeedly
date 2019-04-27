@@ -33,26 +33,25 @@ router.post('/login', (req, res) => {
 
 router.post('/register', (req, res) => {
     let user = new User();
+    if (req.body.email) user.email = req.body.email;
+    if (req.body.password) user.password = req.body.password;
+    if (req.body.username) user.username = req.body.username;
+
     User.findOne({email: req.body.email}, (err, userExist) => {
         if (err) return err;
-
         if (userExist) {
             res.json({
                 success: false,
-                message: 'Sorry, a user with this email already exist'
-            });
+                message: ' Sorry, a user with that email already exist. Try another email.'
+            })
         } else {
-            if (req.body.username) user.username = req.body.username; 
-            if (req.body.email) user.email = req.body.email; 
-            if (req.body.password) user.password = req.body.password;
-            
-            const token = jwt.sign({user: userExist}, config.secret, {expiresIn: '7d'});
             user.save();
+            const token = jwt.sign({user: user}, config.secret, {expiresIn: '7d'})
             res.json({
                 success: true,
-                message: 'Registration successful',
+                message: 'Registration successsful',
                 token: token
-            })
+            });
         }
     })
 });

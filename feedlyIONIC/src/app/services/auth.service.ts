@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-const url = 'http://localhost/3030/api/'
+const url = 'http://localhost:3000/api/'
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,7 @@ export class AuthService {
     return this.token ? new HttpHeaders().set('Authorization', this.token) : null;
   }
 
-  register(user) {
-    return this.http.post(`${url}auth/register`, user, {headers: this.headers}).toPromise();
+  register(user: any) {
+    return this.http.post(url + 'auth/register', user).toPromise();
   }
 }

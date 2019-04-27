@@ -9,7 +9,7 @@ import { NavController } from '@ionic/angular';
 export class LoginPage implements OnInit {
   user: any = {};
 
-  constructor(private navCtrl: NavController) { }
+  constructor(private navCtrl: NavController, ) { }
 
   ngOnInit() {
   }
