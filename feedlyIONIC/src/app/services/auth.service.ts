@@ -18,4 +18,8 @@ export class AuthService {
   register(user: any) {
     return this.http.post(url + 'auth/register', user).toPromise();
   }
+
+  login(user: any) {
+    return this.http.post(url + 'auth/login', user).toPromise();
+  }
 }
