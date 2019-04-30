@@ -1,0 +1,16 @@
+<ion-header no-border>
+  <ion-toolbar>
+    <ion-button slot="start" size="small" [disabled]="isDisabled" (click)="addPost()">Post</ion-button>
+    <ion-buttons slot="end">
+        <ion-button color="danger" (click)="removeModal()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-textarea rows="10" (keyup)="disableBtn()" name="post" [(ngModel)]="post.post" placeholder="What's happening?">
+  </ion-textarea>
+  <ion-button color="danger" (click)="selectImage()">
+    <ion-icon name="images"></ion-icon>
+  </ion-button>
+</ion-content>

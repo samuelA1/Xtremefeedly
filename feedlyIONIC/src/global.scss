@@ -13,3 +13,13 @@
 .iconicons {
     padding-left: 18px;
 }
+
+.alertCss {
+    .alert-title {
+        color: red;
+    }
+}
+
+ion-tab-button {
+    --color-selected: red;
+}

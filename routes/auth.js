@@ -11,7 +11,7 @@ router.post('/login', (req, res) => {
         if (userExist) {
             let validatePassword = userExist.comparePassword(req.body.password);
             if (validatePassword) {
-                const token = jwt.sign({user: userExist}, config.secret, {expiresIn: '7d'});
+                const token = jwt.sign({user: userExist}, config.secret, {expiresIn: '365d'});
                 res.json({
                     success: true,
                     message: 'Login successful',
@@ -62,7 +62,7 @@ router.post('/register', (req, res) => {
                         })
                     } else {
                         user.save();
-                        const token = jwt.sign({user: user}, config.secret, {expiresIn: '7d'})
+                        const token = jwt.sign({user: user}, config.secret, {expiresIn: '365d'})
                         res.json({
                             success: true,
                             message: 'Registration successsful',

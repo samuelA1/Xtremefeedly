@@ -1,5 +1,7 @@
 {
   "name": "feedlyIONIC",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

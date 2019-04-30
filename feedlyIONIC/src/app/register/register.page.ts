@@ -1,6 +1,6 @@
-import { AuthService } from './../services/auth.service';
+import { AuthService } from '../_services/auth.service';
 import { Component, OnInit } from '@angular/core';
-import { AlertController, NavController } from '@ionic/angular';
+import { AlertController, NavController, LoadingController } from '@ionic/angular';
 import { Storage } from '@ionic/storage'
 
 @Component({
@@ -10,10 +10,12 @@ import { Storage } from '@ionic/storage'
 })
 export class RegisterPage implements OnInit {
 user: any = {};
+loading: any;
   constructor(private alertCtrl: AlertController,
      private authService: AuthService,
      private navCtrl: NavController,
-     private storage: Storage) { }
+     private storage: Storage, 
+     private loadingCtrl: LoadingController) { }
 
   ngOnInit() {
   }
@@ -21,15 +23,20 @@ user: any = {};
   async register() {
     try {
       if (this.validate(this.user )) {
+        await this.presentLoading();
         const userInfo = await this.authService.register(this.user);
         if (userInfo['success']) {
-          this.navCtrl.navigateForward('home');
-          this.storage.set('token', userInfo['token']);
+            this.loading.dismiss()
+            this.navCtrl.navigateForward('home');
+            this.storage.set('token', userInfo['token']);
         } else {
+          this.loading.dismiss();
           await this.presentAlert(userInfo['message']);
+          
         }
       }    
     } catch (error) {
+      this.loading.dismiss();
       await this.presentAlert(error);
     }
   }
@@ -63,10 +70,17 @@ user: any = {};
       header: 'Sign Up Error',
       message: `${message}`,
       buttons: ['OK'],
-      cssClass: 'alertTitle'
+      cssClass: 'alertCss'
     });
 
-    await alert.present();
+    return await alert.present();
+  }
+
+  async presentLoading() {
+    this.loading = await this.loadingCtrl.create({
+      message: 'Authenticating..',
+    });
+    return await this.loading.present();
   }
 
 }

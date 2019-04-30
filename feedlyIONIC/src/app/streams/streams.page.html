@@ -1,0 +1,63 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-segment (ionChange)="segmentChanged($event)" value="post" [(ngModel)]="stream" color="danger">
+          <ion-segment-button value="post">
+            Streams
+          </ion-segment-button>
+          <ion-segment-button value="top">
+            Top Streams
+          </ion-segment-button>
+        </ion-segment>
+      </ion-toolbar>
+</ion-header>
+
+<ion-content padding [ngSwitch]="stream">
+    <ion-list class="ios list-ios hydrated" *ngSwitchCase="'post'" lines="full">
+        <ion-item class="item ios in-list ion-focusable item-label hydrated">
+          <ion-avatar slot="start" class="ios hydrated">
+            <img src="http://placehold.it/2x2">
+          </ion-avatar>
+          <ion-label class="sc-ion-label-ios-h sc-ion-label-ios-s ios hydrated">
+            <h2>Finn</h2>
+            <h3>I'm a big deal</h3>
+            <p>Listen, I've had a pretty messed up day...</p>
+            <ion-row>
+                <ion-col>
+                  <ion-icon name="thumbs-up"></ion-icon><span style="font-size: 12px">10</span>
+                </ion-col>
+                <ion-col>
+                    <ion-icon name="text"></ion-icon><span style="font-size: 12px">10</span>
+                </ion-col>
+              </ion-row>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+
+
+      <ion-list class="ios list-ios hydrated" *ngSwitchCase="'top'" lines="full">
+          <ion-item class="item ios in-list ion-focusable item-label hydrated">
+            <ion-avatar slot="start" class="ios hydrated">
+              <img src="http://placehold.it/2x2">
+            </ion-avatar>
+            <ion-label class="sc-ion-label-ios-h sc-ion-label-ios-s ios hydrated">
+              <h2>Finn</h2>
+              <h3>I'm a big deal</h3>
+              <p>Listen, I've had a pretty messed up day...</p>
+              <ion-row>
+                  <ion-col>
+                    <ion-icon name="thumbs-up"></ion-icon><span style="font-size: 12px">10</span>
+                  </ion-col>
+                  <ion-col>
+                      <ion-icon name="text"></ion-icon><span style="font-size: 12px">10</span>
+                  </ion-col>
+                </ion-row>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+
+        <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+            <ion-fab-button (click)="callModal()" color="danger" size="small">
+              <ion-icon name="create"></ion-icon>
+            </ion-fab-button>
+          </ion-fab>
+</ion-content>

@@ -27,7 +27,11 @@ router.route('/posts')
                 .populate('comments')
                 .populate('likes')
                 .exec((err, posts) => {
-                    callback(err, posts)
+                    if (err) return err;
+
+                    let allPost = posts
+                    let myPosts = req.url = '/api/post/mypost'
+                    callback(err, allPost, myPosts);
                 });
             },
             function (callback) {
