@@ -47,8 +47,6 @@ router.route('/posts')
                 .exec((err, posts) => {
                     if (err) return err;
 
-                    // let allPost = posts
-                    // let myPosts = req.url = '/api/post/mypost'
                     callback(err, posts);
                 });
             },

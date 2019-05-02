@@ -15,8 +15,9 @@ export class StreamsPage implements OnInit {
   stream: any = {};
   posts: any[];
   tabElement: any;
-  user: any;
   socket: any;
+  page: any = 1;
+  totalPost: any;
 
   constructor(private modalCtrl: ModalController,
      private alertCtrl: AlertController,
@@ -27,13 +28,13 @@ export class StreamsPage implements OnInit {
     this.socket = io('http://localhost:3000')
   }
 
-  async geAllPost() {
+  async geAllPost(page: any) {
     try {
-      const postInfo = await this.postService.getAllPost();
+      const postInfo = await this.postService.getAllPost(page);
       if (postInfo['success']) {
         this.posts = postInfo['posts'];
+        this.totalPost = postInfo['totalPosts']
         console.log(postInfo['posts'])
-        this.user = postInfo['user'];
       } else {
         await this.presentAlert('Unable to retrieve all posts');
       }
@@ -41,6 +42,23 @@ export class StreamsPage implements OnInit {
       await this.presentAlert('Unable to retrieve all posts');
     }
   }
+
+  loadData(event: any) {
+    this.page++
+    setTimeout(() => {
+      this.postService.getAllPost(this.page).then((postInfo) => {
+        postInfo['posts'].forEach((post: any) => {
+          this.posts.push(post)
+        });
+        event.target.complete();
+      });
+  
+      if (this.posts.length == this.totalPost) {
+        event.target.disabled = true;
+      }
+    }, 800);
+  }
+
   segmentChanged(ev: any) {
     this.stream = `${ev.detail.value}`
   }
@@ -110,13 +128,13 @@ export class StreamsPage implements OnInit {
     if (this.tabElement) {
       (this.tabElement as HTMLElement).style.display = 'flex'
     }
-    await this.geAllPost();
+    await this.geAllPost(this.page);
     this.socket.on('refreshPage', async post => {
-      await this.geAllPost();
+      await this.geAllPost(this.page);
     })
 
     this.socket.on('likedPage', async post => {
-      await this.geAllPost();
+      await this.geAllPost(this.page);
     })
   }
 

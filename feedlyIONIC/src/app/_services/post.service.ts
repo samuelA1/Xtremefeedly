@@ -21,8 +21,8 @@ export class PostService {
     return this.http.post(url + 'post/posts', post, {headers: await this.headers()}).toPromise();
   }
 
-  async getAllPost() {
-    return this.http.get(url + 'post/posts', {headers: await this.headers()}).toPromise();
+  async getAllPost(page: any) {
+    return this.http.get(url + `post/posts?page=${page - 1}`, {headers: await this.headers()}).toPromise();
   }
 
   async likePost(postId: any) {

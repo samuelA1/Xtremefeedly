@@ -38,6 +38,13 @@
     </ion-item>
   </ion-list>
 
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
+      <ion-infinite-scroll-content
+        loadingSpinner="bubbles"
+        loadingText="Loading more post...">
+      </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
 
       <ion-list class="ios list-ios hydrated" *ngSwitchCase="'top'" lines="full">
           <ion-item class="item ios in-list ion-focusable item-label hydrated">
@@ -67,6 +74,8 @@
           </ion-fab>
 
 
+
+          <!-- animations -->
   <div *ngIf="!posts">
       <div class="ion-padding custom-skeleton">
         <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>

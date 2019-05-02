@@ -22,7 +22,7 @@ app.use(morgan('dev'));
 
 const server = require('http').createServer(app);
 const io = require('socket.io').listen(server);
-require('./streams')(io);
+require('./socket')(io);
 
 app.use('/api/auth', authRoute);
 app.use('/api/post', postRoute);
