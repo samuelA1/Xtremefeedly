@@ -44,7 +44,6 @@ router.route('/posts')
                 .sort({createdAt: -1})
                 .populate('comments')
                 .populate('owner')
-                .populate('likes')
                 .exec((err, posts) => {
                     if (err) return err;
 
@@ -65,7 +64,7 @@ router.route('/posts')
             posts.forEach(post => {
                 if (post['likes']) {
                     post['likes'].forEach(like => {
-                        if (like['owner']['_id'] == req.decoded.user._id) {
+                        if (like == req.decoded.user._id) {
                             post = Object.assign(post, {
                                 isLiked: true
                             })

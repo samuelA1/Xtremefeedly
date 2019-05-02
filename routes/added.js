@@ -78,9 +78,10 @@ router.route('/likes/:id')
         const userId = req.decoded.user._id;
         Post.findById(postId, (err, post) => {
             if (err) return err;
-            
+
             const index = post.likes.indexOf(userId);
-            post.likes.splice(1, index);
+            console.log(index)
+            post.likes.splice(index, 1);
             post.save();
             res.json({
                 success: true,

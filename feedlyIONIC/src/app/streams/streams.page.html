@@ -27,7 +27,8 @@
         <p>{{GetPostTime(post.createdAt)}}</p>
         <ion-row>
             <ion-col>
-              <ion-icon name="thumbs-up" (click)="likePost(post._id)"></ion-icon><span style="font-size: 12px">10</span>
+              <ion-icon name="thumbs-up" class="likeThump" [class.isLiked]="post.isLiked"  (click)="likePost(post._id, post)"></ion-icon>
+              <span *ngIf="post.likes?.length !== 0" [class.isLiked]="post.isLiked" style="font-size: 12px">{{post.likes?.length}}</span>
             </ion-col>
             <ion-col>
                 <ion-icon name="text"></ion-icon><span style="font-size: 12px">10</span>

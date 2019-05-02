@@ -13,11 +13,10 @@ import * as io from 'socket.io-client';
 })
 export class StreamsPage implements OnInit {
   stream: any = {};
-  posts: any;
+  posts: any[];
   tabElement: any;
   user: any;
   socket: any;
-
 
   constructor(private modalCtrl: ModalController,
      private alertCtrl: AlertController,
@@ -72,13 +71,26 @@ export class StreamsPage implements OnInit {
     return moment(time).fromNow();
   }
 
-  async likePost(postId: any) {
+  async likePost(postId: any, post: any) {
     try {
-      const likeInfo = await this.postService.likePost(postId);
-      if (likeInfo['success']) {
-        this.presentToast(likeInfo['message']);
+      if (post['isLiked']) {
+        const unlikeInfo = await this.postService.unlikePost(postId);
+        if (unlikeInfo['success']) {
+          this.presentToast(unlikeInfo['message']);
+          post['isLiked'] = false;
+          this.socket.emit('like', postId);
+        } else {
+          await this.presentAlert('Sorry, an error occuured while trying to send like a post')
+        }
       } else {
-        await this.presentAlert('Sorry, an error occuured while trying to send like a post')
+        const likeInfo = await this.postService.likePost(postId);
+        if (likeInfo['success']) {
+          this.presentToast(likeInfo['message']);
+          post['isLiked'] = true;
+          this.socket.emit('like', postId);
+        } else {
+          await this.presentAlert('Sorry, an error occuured while trying to send like a post')
+        }
       }
     } catch (error) {
       await this.presentAlert('Sorry, an error occuured while trying to send like a post')
@@ -100,6 +112,10 @@ export class StreamsPage implements OnInit {
     }
     await this.geAllPost();
     this.socket.on('refreshPage', async post => {
+      await this.geAllPost();
+    })
+
+    this.socket.on('likedPage', async post => {
       await this.geAllPost();
     })
   }

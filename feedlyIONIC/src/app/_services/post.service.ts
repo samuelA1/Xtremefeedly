@@ -25,7 +25,11 @@ export class PostService {
     return this.http.get(url + 'post/posts', {headers: await this.headers()}).toPromise();
   }
 
-  async likePost(postId) {
+  async likePost(postId: any) {
     return this.http.post(url + `likes/${postId}`, {}, {headers: await this.headers()}).toPromise();
+  }
+
+  async unlikePost(postId: any) {
+    return this.http.post(url + `removeLike/${postId}`, {}, {headers: await this.headers()}).toPromise();
   }
 }
