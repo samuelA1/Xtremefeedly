@@ -21,14 +21,14 @@ loading: any;
   }
 
   async register() {
+    await this.presentLoading();
     try {
       if (this.validate(this.user )) {
-        await this.presentLoading();
         const userInfo = await this.authService.register(this.user);
         if (userInfo['success']) {
-            this.loading.dismiss()
-            this.navCtrl.navigateForward('home');
-            this.storage.set('token', userInfo['token']);
+          this.loading.dismiss();
+          this.navCtrl.navigateForward('streams');
+          this.storage.set('token', userInfo['token']);
         } else {
           this.loading.dismiss();
           await this.presentAlert(userInfo['message']);

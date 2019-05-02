@@ -6,9 +6,10 @@ const PostSchema = new Schema({
     post: {type: String, default: ''},
     imgVersion: {type: String, default: ''},
     imgId: {type: String, default: ''},
-    createdAt: {type: Date, default: Date.now()},
+    createdAt: {type: Date, default: Date.now},
     comments: [{type: Schema.Types.ObjectId, ref: 'Comments'}],
-    likes: [{type: Schema.Types.ObjectId, ref: 'Likes'}]
+    likes: [{type: Schema.Types.ObjectId, ref: 'User'}],
+    isLiked: {type: Boolean, default: false}
 }, {
     toJSON: {virtuals: true},
     toObject: {virtuals: true}
@@ -16,7 +17,7 @@ const PostSchema = new Schema({
 
 PostSchema.virtual('totalLikes').get(function () {
     var totalLikes = 0;
-    if (this.like.length) {
+    if (this.like) {
         totalLikes = this.likes.length;
     } else {
         totalLikes = 0;

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController, AlertController } from '@ionic/angular';
+import { ModalController, AlertController, ToastController } from '@ionic/angular';
 import * as io from 'socket.io-client';
 import { PostService } from '../_services/post.service';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
@@ -11,7 +11,9 @@ import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
   styleUrls: ['./post-modal.page.scss'],
 })
 export class PostModalPage implements OnInit {
-  post: any = {};
+  post: any = {
+    image: ''
+  };
   isDisabled: boolean = true;
   socket: any;
   image: any;
@@ -19,7 +21,8 @@ export class PostModalPage implements OnInit {
   constructor(private modalCtrl: ModalController,
       private alertCtrl: AlertController,
       private postService: PostService,
-      private camera: Camera) { 
+      private camera: Camera,
+      private toastCtrl: ToastController) { 
     this.socket = io('http://localhost:3000');    
   }
 
@@ -29,6 +32,7 @@ export class PostModalPage implements OnInit {
       if (postInfo['success']) {
         this.socket.emit('refresh', this.post);
         this.modalCtrl.dismiss();
+        await this.presentToast(postInfo['message']);
       } else {
         await this.presentAlert('Sorry, an error occured while trying to add a post');
       }
@@ -47,13 +51,22 @@ export class PostModalPage implements OnInit {
 
   async presentAlert(message: string) {
     const alert = await this.alertCtrl.create({
-      header: 'Sign Up Error',
+      header: 'Post Error',
       message: `${message}`,
       buttons: ['OK'],
       cssClass: 'alertCss'
     });
 
     return await alert.present();
+  }
+
+  async presentToast(message) {
+    const toast = await this.toastCtrl.create({
+      message: message,
+      duration: 2000,
+      position: 'bottom',
+    });
+    toast.present();
   }
 
   selectImage() {
@@ -71,6 +84,7 @@ export class PostModalPage implements OnInit {
 
     this.camera.getPicture(options).then((imageData) => {
       this.image = 'data:image/jpeg;base64,' + imageData;
+      this.post['image'] = this.image;
       console.log(this.image)
      }, (err) => {
        this.presentAlert(err);

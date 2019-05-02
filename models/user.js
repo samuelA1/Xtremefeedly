@@ -6,9 +6,8 @@ const UserSchema = new Schema({
     username: {type: String, lowercase: true, unique: true, required: true},
     email: {type: String, lowercase: true, unique: true, required: true},
     password: String,
-    posts: [{type: Schema.Types.ObjectId, ref: 'Post'}],
-    picVersion: {type: String, default:''},
-    picId: {type: String, default:''},
+    picVersion: {type: String, default:'1556683453'},
+    picId: {type: String, default:'image.jpg'},
     images: [{
         imageVersion: {type: String, default:''},
         imageId: {type: String, default:''},

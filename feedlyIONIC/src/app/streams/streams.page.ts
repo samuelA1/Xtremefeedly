@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, AlertController, ToastController } from '@ionic/angular';
 import { PostModalPage } from '../post-modal/post-modal.page';
+import { PostService } from '../_services/post.service';
+import * as moment from 'moment';
+import * as io from 'socket.io-client';
+
 
 @Component({
   selector: 'app-streams',
@@ -9,9 +13,34 @@ import { PostModalPage } from '../post-modal/post-modal.page';
 })
 export class StreamsPage implements OnInit {
   stream: any = {};
+  posts: any;
+  tabElement: any;
+  user: any;
+  socket: any;
 
-  constructor(private modalCtrl: ModalController) { 
+
+  constructor(private modalCtrl: ModalController,
+     private alertCtrl: AlertController,
+     private postService: PostService,
+     private toastCtrl: ToastController) {
+    this.tabElement = document.querySelector('.tabar'); 
     this.stream = "post"
+    this.socket = io('http://localhost:3000')
+  }
+
+  async geAllPost() {
+    try {
+      const postInfo = await this.postService.getAllPost();
+      if (postInfo['success']) {
+        this.posts = postInfo['posts'];
+        console.log(postInfo['posts'])
+        this.user = postInfo['user'];
+      } else {
+        await this.presentAlert('Unable to retrieve all posts');
+      }
+    } catch (error) {
+      await this.presentAlert('Unable to retrieve all posts');
+    }
   }
   segmentChanged(ev: any) {
     this.stream = `${ev.detail.value}`
@@ -28,7 +57,51 @@ export class StreamsPage implements OnInit {
     await this.presentModal();
   }
 
-  ngOnInit() {
+  async presentAlert(message: string) {
+    const alert = await this.alertCtrl.create({
+      header: 'Stream Error',
+      message: `${message}`,
+      buttons: ['OK'],
+      cssClass: 'alertCss'
+    });
+
+    return await alert.present();
+  }
+
+  GetPostTime(time) {
+    return moment(time).fromNow();
+  }
+
+  async likePost(postId: any) {
+    try {
+      const likeInfo = await this.postService.likePost(postId);
+      if (likeInfo['success']) {
+        this.presentToast(likeInfo['message']);
+      } else {
+        await this.presentAlert('Sorry, an error occuured while trying to send like a post')
+      }
+    } catch (error) {
+      await this.presentAlert('Sorry, an error occuured while trying to send like a post')
+    }
+  }
+
+  async presentToast(message) {
+    const toast = await this.toastCtrl.create({
+      message: message,
+      duration: 2000,
+      position: 'bottom',
+    });
+    toast.present();
+  }
+
+  async ngOnInit() {
+    if (this.tabElement) {
+      (this.tabElement as HTMLElement).style.display = 'flex'
+    }
+    await this.geAllPost();
+    this.socket.on('refreshPage', async post => {
+      await this.geAllPost();
+    })
   }
 
 }

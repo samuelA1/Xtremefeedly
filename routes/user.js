@@ -34,4 +34,10 @@ router.post('/updateUser', checkJwt, (req, res) => {
     })
 })
 
+router.get('/getUser', checkJwt, (req, res) => {
+    res.json({
+        decoded: req.decoded
+    });
+});
+
 module.exports = router;

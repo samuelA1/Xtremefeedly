@@ -11,21 +11,24 @@ import { NavController, AlertController, LoadingController } from '@ionic/angula
 export class LoginPage implements OnInit {
   user: any = {};
   loading: any;
+  tabElement: any;
 
   constructor(private navCtrl: NavController,
      private authService: AuthService, 
      private storage: Storage, 
      private alertCtrl: AlertController,
-     private loadingCtrl: LoadingController) { }
+     private loadingCtrl: LoadingController) { 
+       this.tabElement = document.querySelector('.tabar');
+     }
 
      async login() {
-       await this.presentLoading();
+      await this.presentLoading();
       try {
         if (this.validate(this.user )) {
           const userInfo = await this.authService.login(this.user);
           if (userInfo['success']) {
             this.loading.dismiss();
-            this.navCtrl.navigateForward('home');
+            this.navCtrl.navigateForward('streams');
             this.storage.set('token', userInfo['token']);
           } else {
             this.loading.dismiss();
@@ -60,7 +63,7 @@ export class LoginPage implements OnInit {
   
     async presentAlert(message: string) {
       const alert = await this.alertCtrl.create({
-        header: 'Sign Up Error',
+        header: 'Login Error',
         message: `${message}`,
         buttons: ['OK'],
         cssClass: 'alertTitle'
@@ -70,6 +73,11 @@ export class LoginPage implements OnInit {
     }
 
   ngOnInit() {
+    if (this.tabElement) {
+      (this.tabElement as HTMLElement).style.display = 'none'
+    } else {
+      (this.tabElement as HTMLElement).style.display = 'flex'
+    }
   }
 
   registerPage() {

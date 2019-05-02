@@ -6,7 +6,8 @@ const morgan = require('morgan');
 const cors = require('cors');
 const authRoute = require('./routes/auth');
 const postRoute = require('./routes/post');
-const mainRoute = require('./routes/main');
+const userRoute = require('./routes/user')
+const addedRoute = require('./routes/added');
 
 mongoose.connect(config.db, {useNewUrlParser: true}, err => {
     err ? console.log('Can not connect to database') : console.log('Connected to database');
@@ -25,7 +26,8 @@ require('./streams')(io);
 
 app.use('/api/auth', authRoute);
 app.use('/api/post', postRoute);
-app.use('/api', mainRoute);
+app.use('/api/profile', userRoute);
+app.use('/api', addedRoute);
 
 
 

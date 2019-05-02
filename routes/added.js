@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const Likes = require('../models/likes');
 const Comments = require('../models/comments');
 const Post = require('../models/post');
 const async = require('async');
@@ -7,27 +6,17 @@ const checkJwt = require('../middlewares/check-jwt');
 
 router.route('/likes/:id')
     .post(checkJwt, (req, res) => {
-        const postId = req.params.id;
-        async.waterfall([
-            function (callback) {
-                let likes = new Likes();
-                likes.owner = req.decoded.user._id;
-                callback(err, likes)
-            }, 
-            function (likes) {
-                Post.findById(postId, (err, post) => {
-                    if (err) return err;
 
-                    post.likes.push(likes._id);
-                    likes.save();
-                    post.save();
-                    res.status(200).json({
-                       success: true,
-                       message: 'You liked a post' 
-                    });
-                })
-            }
-        ]);
+        Post.findById(req.params.id, (err, post) => {
+            if (err) return err;
+
+            post.likes.push(req.decoded.user._id);
+            post.save();
+            res.status(200).json({
+                success: true,
+                message: 'You liked a post' 
+            });
+        })
     })
     .get(checkJwt, (req, res) => {
         const postId = req.params.id;
@@ -80,6 +69,22 @@ router.route('/likes/:id')
             res.status(200).json({
                 success: true,
                 comments: comments
+            });
+        });
+    });
+
+    router.post('/removeLike/:id',checkJwt, (req, res, next) => {
+        const postId = req.params.id;
+        const userId = req.decoded.user._id;
+        Post.findById(postId, (err, post) => {
+            if (err) return err;
+            
+            const index = post.likes.indexOf(userId);
+            post.likes.splice(1, index);
+            post.save();
+            res.json({
+                success: true,
+                message: "You unliked a post"
             });
         });
     });
