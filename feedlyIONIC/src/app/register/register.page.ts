@@ -11,13 +11,21 @@ import { Storage } from '@ionic/storage'
 export class RegisterPage implements OnInit {
 user: any = {};
 loading: any;
+fabElement: any;
   constructor(private alertCtrl: AlertController,
      private authService: AuthService,
      private navCtrl: NavController,
      private storage: Storage, 
-     private loadingCtrl: LoadingController) { }
+     private loadingCtrl: LoadingController) { 
+      this.fabElement = document.querySelector('.post-fab');
+     }
 
   ngOnInit() {
+    if (this.fabElement) {
+      (this.fabElement as HTMLElement).style.display = 'none'
+    } else {
+      (this.fabElement as HTMLElement).style.display = 'flex'
+    }
   }
 
   async register() {

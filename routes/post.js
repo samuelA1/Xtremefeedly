@@ -33,16 +33,15 @@ router.route('/posts')
         });
     })
     .get(checkJwt, (req, res) => {
-        const perPage = 10;
-        const pageNumber = req.query.page;
+        const perPage = 13;
+        // const pageNumber = req.query.page;
 
         async.parallel([
             function (callback) {
                 Post.find({})
-                .skip(pageNumber * perPage)
-                .limit(perPage)
+                // .skip(pageNumber * perPage)
+                // .limit(perPage)
                 .sort({createdAt: -1})
-                .populate('comments')
                 .populate('owner')
                 .exec((err, posts) => {
                     if (err) return err;
@@ -60,16 +59,22 @@ router.route('/posts')
 
             let posts = results[0];
             posts.forEach(post => {
+                if (post['comments']) {
+                    post['comments'].forEach(comment => {
+                        if (comment['commentOwner'] == req.decoded.user._id) {
+                            post.isCommented = true;
+                        } else {
+                            post.isCommented = false;
+                        }
+                    })
+                }
+
                 if (post['likes']) {
                     post['likes'].forEach(like => {
                         if (like == req.decoded.user._id) {
-                            post = Object.assign(post, {
-                                isLiked: true
-                            })
+                            post.isLiked = true;
                         } else {
-                            post = Object.assign(post, {
-                                isLiked: false
-                            })
+                            post.isLiked = false;
                         }
                     })
                 }

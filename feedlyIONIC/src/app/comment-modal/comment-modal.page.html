@@ -1,9 +1,30 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>comment-modal</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content padding>
-
-</ion-content>
+<ion-header no-border>
+    <ion-toolbar>
+      <ion-button slot="start" size="small" [disabled]="isDisabled" (click)="addComment()">Comment</ion-button>
+      <ion-buttons slot="end">
+          <ion-button color="danger" (click)="removeModal()">Close</ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content padding>
+    <ion-textarea rows="10" (keyup)="disableBtn()" name="comment" [(ngModel)]="comment.comment" placeholder="Any comment?">
+    </ion-textarea>
+    <hr>
+    <ion-list lines="none">
+        <ion-list-header *ngIf="comments?.length == 0">
+            <ion-label>You don't have any comment yet</ion-label>
+          </ion-list-header>
+      <ion-item *ngFor="let comment of comments">
+        <ion-avatar slot="start">
+          <img src="https://res.cloudinary.com/daydy3tvk/image/upload/v{{comment.commentOwner.picVersion}}/{{comment.commentOwner.picId}}">
+        </ion-avatar>
+        <ion-label>
+          <h2>{{comment.commentOwner.username | titlecase}}</h2>
+          <h3>{{comment.comment.comment}}</h3>
+          <p>{{GetPostTime(comment.createdAt)}}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+  

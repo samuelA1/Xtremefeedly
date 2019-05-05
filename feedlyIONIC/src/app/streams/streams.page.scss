@@ -8,6 +8,14 @@
     color: red !important;
 }
 
+.isCommented {
+    color: red !important;
+}
+
 .likeThump {
+    cursor: pointer;
+}
+
+.comment {
     cursor: pointer;
 }

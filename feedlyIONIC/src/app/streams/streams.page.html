@@ -11,7 +11,15 @@
       </ion-toolbar>
 </ion-header>
 
-<ion-content padding [ngSwitch]="stream">
+<ion-content padding [ngSwitch]="stream" >
+      <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content
+          pullingIcon="arrow-dropdown"
+          refreshingSpinner="circles"
+          refreshingText="Refreshing...">
+        </ion-refresher-content>
+      </ion-refresher>
+
   <ion-list class="ios list-ios hydrated" *ngSwitchCase="'post'" lines="full">
       <ion-list-header *ngIf="posts?.length == 0">
           <ion-label>You don't have any post yet</ion-label>
@@ -31,7 +39,8 @@
               <span *ngIf="post.likes?.length !== 0" [class.isLiked]="post.isLiked" style="font-size: 12px">{{post.likes?.length}}</span>
             </ion-col>
             <ion-col>
-                <ion-icon name="text"></ion-icon><span style="font-size: 12px">10</span>
+                <ion-icon name="text" class="comment" [class.isCommented]="post.isCommented" (click)="callCommentModal(post._id, post)"></ion-icon>
+                <span *ngIf="post.comments?.length !== 0" [class.isCommented]="post.isCommented" style="font-size: 12px">{{post.comments?.length}}</span>
             </ion-col>
           </ion-row>
       </ion-label>
@@ -44,7 +53,6 @@
         loadingText="Loading more post...">
       </ion-infinite-scroll-content>
   </ion-infinite-scroll>
-
 
       <ion-list class="ios list-ios hydrated" *ngSwitchCase="'top'" lines="full">
           <ion-item class="item ios in-list ion-focusable item-label hydrated">
@@ -67,14 +75,7 @@
           </ion-item>
         </ion-list>
 
-        <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-            <ion-fab-button (click)="callModal()" color="danger" size="small">
-              <ion-icon name="create"></ion-icon>
-            </ion-fab-button>
-          </ion-fab>
-
-
-
+      
           <!-- animations -->
   <div *ngIf="!posts">
       <div class="ion-padding custom-skeleton">

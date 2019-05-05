@@ -1,17 +1,22 @@
-<ion-app>
+<ion-app style="background-color: white;">
   <ion-router-outlet></ion-router-outlet>
 
   <ion-tabs>
     <ion-tab-bar slot="bottom" class="tabar">
-      <ion-tab-button tab="streams">
-        <ion-icon name="contacts"></ion-icon>
-        <ion-label>Streams</ion-label>
+      <ion-tab-button tab="streams" (click)="scrollToTop()">
+        <ion-icon name="home" ></ion-icon>
+        <div *ngIf="unread == 'yes'" class="unread"></div>
       </ion-tab-button>
   
       <ion-tab-button tab="">
         <ion-icon name="information-circle"></ion-icon>
-        <ion-label>About</ion-label>
       </ion-tab-button>
     </ion-tab-bar>
   </ion-tabs>
+
+  <ion-fab vertical="center" horizontal="end"slot="fixed">
+      <ion-fab-button (click)="callModal()" color="danger" size="small" class="post-fab">
+        <ion-icon name="create"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
 </ion-app>

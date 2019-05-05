@@ -12,6 +12,7 @@ export class LoginPage implements OnInit {
   user: any = {};
   loading: any;
   tabElement: any;
+  fabElement: any;
 
   constructor(private navCtrl: NavController,
      private authService: AuthService, 
@@ -19,6 +20,7 @@ export class LoginPage implements OnInit {
      private alertCtrl: AlertController,
      private loadingCtrl: LoadingController) { 
        this.tabElement = document.querySelector('.tabar');
+       this.fabElement = document.querySelector('.post-fab');
      }
 
      async login() {
@@ -78,10 +80,15 @@ export class LoginPage implements OnInit {
     } else {
       (this.tabElement as HTMLElement).style.display = 'flex'
     }
+    if (this.fabElement) {
+      (this.fabElement as HTMLElement).style.display = 'none'
+    } else {
+      (this.fabElement as HTMLElement).style.display = 'flex'
+    }
   }
 
   registerPage() {
-    this.navCtrl.navigateForward('/register')
+    this.navCtrl.navigateForward('register')
   }
 
   async presentLoading() {

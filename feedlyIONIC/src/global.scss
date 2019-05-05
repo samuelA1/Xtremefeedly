@@ -23,3 +23,13 @@
 ion-tab-button {
     --color-selected: red;
 }
+.unread {
+    width: 7px;
+    height: 7px;
+    border-radius: 10px;
+    background-color: red;
+    position: absolute;
+    right: 80px;
+    top: 12px;
+    margin-top: 0.1em;
+}

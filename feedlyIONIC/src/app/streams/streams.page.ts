@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { ModalController, AlertController, ToastController } from '@ionic/angular';
-import { PostModalPage } from '../post-modal/post-modal.page';
+import { CommentModalPage } from './../comment-modal/comment-modal.page';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { ModalController, AlertController, ToastController, IonContent } from '@ionic/angular';
 import { PostService } from '../_services/post.service';
 import * as moment from 'moment';
 import * as io from 'socket.io-client';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -11,30 +12,42 @@ import * as io from 'socket.io-client';
   templateUrl: './streams.page.html',
   styleUrls: ['./streams.page.scss'],
 })
-export class StreamsPage implements OnInit {
+
+export class StreamsPage implements OnInit, OnDestroy {
+  @ViewChild(IonContent) ionContent: IonContent
   stream: any = {};
   posts: any[];
   tabElement: any;
+  fabElement: any;
   socket: any;
   page: any = 1;
   totalPost: any;
+  totalPages: any;
+  subscription: Subscription
 
   constructor(private modalCtrl: ModalController,
      private alertCtrl: AlertController,
      private postService: PostService,
      private toastCtrl: ToastController) {
     this.tabElement = document.querySelector('.tabar'); 
+    this.fabElement = document.querySelector('.post-fab'); 
     this.stream = "post"
-    this.socket = io('http://localhost:3000')
+    this.socket = io('http://localhost:3000');
+    this.subscription = this.postService.controlToTop$.subscribe(
+      control => {
+        if (control == true) {
+          this.scrollToTop();
+        }
+    });
   }
 
-  async geAllPost(page: any) {
+  async getAllPost(page: any) {
     try {
       const postInfo = await this.postService.getAllPost(page);
       if (postInfo['success']) {
         this.posts = postInfo['posts'];
-        this.totalPost = postInfo['totalPosts']
-        console.log(postInfo['posts'])
+        this.totalPost = postInfo['totalPosts'];
+        this.totalPages = postInfo['totalPages'];
       } else {
         await this.presentAlert('Unable to retrieve all posts');
       }
@@ -47,9 +60,10 @@ export class StreamsPage implements OnInit {
     this.page++
     setTimeout(() => {
       this.postService.getAllPost(this.page).then((postInfo) => {
-        postInfo['posts'].forEach((post: any) => {
-          this.posts.push(post)
-        });
+        // postInfo['posts'].forEach((post: any) => {
+        //   this.posts.push(post)
+        //   console.log(this.posts)
+        // });
         event.target.complete();
       });
   
@@ -63,15 +77,17 @@ export class StreamsPage implements OnInit {
     this.stream = `${ev.detail.value}`
   }
 
-  async presentModal() {
+  
+  async presentCommentModal(postId: any) {
     const modal = await this.modalCtrl.create({
-      component: PostModalPage,
+      component: CommentModalPage,
+      componentProps: {postId: postId}
     });
     return await modal.present();
   }
 
-  async callModal() {
-    await this.presentModal();
+  async callCommentModal(postId: any) {
+    await this.presentCommentModal(postId);
   }
 
   async presentAlert(message: string) {
@@ -95,23 +111,22 @@ export class StreamsPage implements OnInit {
         const unlikeInfo = await this.postService.unlikePost(postId);
         if (unlikeInfo['success']) {
           this.presentToast(unlikeInfo['message']);
-          post['isLiked'] = false;
-          this.socket.emit('like', postId);
+          this.socket.emit('like', post)
+          
         } else {
-          await this.presentAlert('Sorry, an error occuured while trying to send like a post')
+          await this.presentAlert('Sorry, an error occuured while trying to like a post')
         }
       } else {
         const likeInfo = await this.postService.likePost(postId);
         if (likeInfo['success']) {
           this.presentToast(likeInfo['message']);
-          post['isLiked'] = true;
-          this.socket.emit('like', postId);
+          this.socket.emit('like', post)          
         } else {
-          await this.presentAlert('Sorry, an error occuured while trying to send like a post')
+          await this.presentAlert('Sorry, an error occuured while trying to like a post')
         }
       }
     } catch (error) {
-      await this.presentAlert('Sorry, an error occuured while trying to send like a post')
+      await this.presentAlert('Sorry, an error occuured while trying to like a post')
     }
   }
 
@@ -124,18 +139,49 @@ export class StreamsPage implements OnInit {
     toast.present();
   }
 
+  scrollToTop() {
+    this.ionContent.scrollToTop();
+  }
+
+  endScroll() {
+    this.postService.triggerToTop(false);
+  }
+
   async ngOnInit() {
     if (this.tabElement) {
       (this.tabElement as HTMLElement).style.display = 'flex'
     }
-    await this.geAllPost(this.page);
+    if (this.fabElement) {
+      (this.fabElement as HTMLElement).style.display = 'flex'
+    }
+    await this.getAllPost(this.page);
     this.socket.on('refreshPage', async post => {
-      await this.geAllPost(this.page);
+      await this.getAllPost(1);
+      setTimeout(() => {
+        this.postService.triggerToTop('yes');
+        this.presentToast('New post available');
+      }, 1000);
     })
 
-    this.socket.on('likedPage', async post => {
-      await this.geAllPost(this.page);
-    })
+    this.socket.on('commentPage', async (comment: any) => {
+      await this.getAllPost(1)
+    });
+
+    this.socket.on('likePage', async (like: any) => {
+      await this.getAllPost(1)
+    });
+
+  }
+
+  async doRefresh(event: any) {
+    await this.getAllPost(1);
+    setTimeout(() => {
+      event.target.complete();
+    }, 2000);
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
 }

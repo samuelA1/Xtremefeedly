@@ -36,33 +36,28 @@ router.route('/likes/:id')
     router.route('/comments/:id')
     .post(checkJwt, (req, res) => {
         const postId = req.params.id;
-        async.waterfall([
-            function (callback) {
-                let comments = new Comments();
-                comments.owner = req.decoded.user._id;
-                comments.comment = req.body.comment;
-                callback(err, comments)
-            }, 
-            function (comments) {
-                Post.findById(postId, (err, post) => {
-                    if (err) return err;
+        
+        Post.findById(postId, (err, post) => {
+            if (err) return err;
 
-                    post.comments.push(comments._id);
-                    comments.save();
-                    post.save();
-                    res.status(200).json({
-                       success: true,
-                       message: 'You liked a post' 
-                    });
-                })
-            }
-        ]);
+            let comments = new Comments();
+            comments.owner = req.decoded.user._id;
+            comments.comment = req.body.comment;
+            post.comments.push({comment: comments._id, commentOwner: req.decoded.user._id});
+            comments.save();
+            post.save();
+            res.status(200).json({
+                success: true,
+                message: 'You commented on a post' 
+            });
+        })
     })
     .get(checkJwt, (req, res) => {
         const postId = req.params.id;
         Post.findById(postId)
         .select('comments')
-        .populate('comments')
+        .populate('comments.comment')
+        .populate('comments.commentOwner')
         .exec((err, comments) => {
             if (err) return err;
 
@@ -80,7 +75,6 @@ router.route('/likes/:id')
             if (err) return err;
 
             const index = post.likes.indexOf(userId);
-            console.log(index)
             post.likes.splice(index, 1);
             post.save();
             res.json({

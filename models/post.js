@@ -7,22 +7,14 @@ const PostSchema = new Schema({
     imgVersion: {type: String, default: ''},
     imgId: {type: String, default: ''},
     createdAt: {type: Date, default: Date.now},
-    comments: [{type: Schema.Types.ObjectId, ref: 'Comments'}],
+    comments: [{
+        comment: {type: Schema.Types.ObjectId, ref: 'Comments'},
+        commentOwner: {type: Schema.Types.ObjectId, ref: 'User'},
+        createdAt: {type: Date, default: Date.now} 
+    }],
     likes: [{type: Schema.Types.ObjectId, ref: 'User'}],
-    isLiked: {type: Boolean, default: false}
-}, {
-    toJSON: {virtuals: true},
-    toObject: {virtuals: true}
-});
-
-PostSchema.virtual('totalLikes').get(function () {
-    var totalLikes = 0;
-    if (this.like) {
-        totalLikes = this.likes.length;
-    } else {
-        totalLikes = 0;
-    }
-    return totalLikes;
+    isLiked: {type: Boolean, default: false},
+    isCommented: {type: Boolean, default: false}
 });
 
 module.exports = mongoose.model('Post', PostSchema);

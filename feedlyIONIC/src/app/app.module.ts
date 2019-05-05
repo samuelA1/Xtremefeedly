@@ -1,3 +1,4 @@
+import { CommentModalPageModule } from './comment-modal/comment-modal.module';
 import { PostService } from './_services/post.service';
 import { PostModalPageModule } from './post-modal/post-modal.module';
 import { UserService } from './_services/user.service';
@@ -26,6 +27,7 @@ import { AppRoutingModule } from './app-routing.module';
      AppRoutingModule, 
      IonicStorageModule.forRoot(),
      PostModalPageModule,
+     CommentModalPageModule
      ],
   providers: [
     StatusBar,

@@ -4,8 +4,12 @@ module.exports = function (io) {
             io.emit('refreshPage', data);
         });
 
+        socket.on('comment', data => {
+            io.emit('commentPage', data);
+        });
+
         socket.on('like', data => {
-            io.emit('likedPage', data);
+            io.emit('likePage', data);
         });
     });
 }
