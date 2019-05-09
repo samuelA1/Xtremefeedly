@@ -39,6 +39,7 @@ export class AppComponent {
    this.authService.token = await this.storage.get('token');
     if (this.authService.token) {
        this.exp = await this.userService.getUserProfile();
+       this.storage.set('userId', this.exp.decoded.user['_id']);
        if (this.exp['decoded']['exp'] < Date.now()) {
           this.navCtrl.navigateRoot('streams')
        } else {
@@ -60,11 +61,9 @@ export class AppComponent {
   async callModal() {
     await this.presentModal();
   }
-
   scrollToTop() {
     this.postService.triggerToTop(true)
   }
-
   initializeApp() {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();

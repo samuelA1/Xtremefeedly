@@ -1,10 +1,11 @@
 import { CommentModalPage } from './../comment-modal/comment-modal.page';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { ModalController, AlertController, ToastController, IonContent } from '@ionic/angular';
+import { ModalController, AlertController, ToastController, IonContent, ActionSheetController } from '@ionic/angular';
 import { PostService } from '../_services/post.service';
 import * as moment from 'moment';
 import * as io from 'socket.io-client';
 import { Subscription } from 'rxjs';
+import { Storage } from '@ionic/storage';
 
 
 @Component({
@@ -17,18 +18,22 @@ export class StreamsPage implements OnInit, OnDestroy {
   @ViewChild(IonContent) ionContent: IonContent
   stream: any = {};
   posts: any[];
+  userId: any;
   tabElement: any;
   fabElement: any;
   socket: any;
   page: any = 1;
   totalPost: any;
+  topPosts: any[];
   totalPages: any;
   subscription: Subscription
 
   constructor(private modalCtrl: ModalController,
      private alertCtrl: AlertController,
      private postService: PostService,
-     private toastCtrl: ToastController) {
+     private toastCtrl: ToastController,
+     private actionSheetController: ActionSheetController,
+     private storage: Storage) {
     this.tabElement = document.querySelector('.tabar'); 
     this.fabElement = document.querySelector('.post-fab'); 
     this.stream = "post"
@@ -46,7 +51,9 @@ export class StreamsPage implements OnInit, OnDestroy {
       const postInfo = await this.postService.getAllPost(page);
       if (postInfo['success']) {
         this.posts = postInfo['posts'];
+        console.log(this.posts)
         this.totalPost = postInfo['totalPosts'];
+        this.topPosts = postInfo['topPosts'];
         this.totalPages = postInfo['totalPages'];
       } else {
         await this.presentAlert('Unable to retrieve all posts');
@@ -139,6 +146,46 @@ export class StreamsPage implements OnInit, OnDestroy {
     toast.present();
   }
 
+  async removePost(postId) {
+    try {
+      const deletePost = await this.postService.deletePost(postId);
+      if (deletePost['success']) {
+        this.presentToast('Post deleted successfully')
+        this.socket.emit('delete', {});
+      } else {
+        await this.presentAlert('Sorry, an error occured while trying to delete a post');
+      }
+    } catch (error) {
+      await this.presentAlert('Sorry, an error occured while trying to delete a post');
+    }
+  }
+
+  async presentActionSheet(postId: any) {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Post',
+      buttons: [{
+        text: 'Delete',
+        role: 'destructive',
+        icon: 'trash',
+        handler: async () => {
+          await this.removePost(postId)
+        }
+      }, {
+        text: 'Cancel',
+        icon: 'close',
+        role: 'cancel',
+        handler: () => {
+        }
+      }]
+    });
+    await actionSheet.present();
+  }
+
+  async deletePost(postId: any) {
+    await this.presentActionSheet(postId);
+  }
+
+
   scrollToTop() {
     this.ionContent.scrollToTop();
   }
@@ -170,6 +217,12 @@ export class StreamsPage implements OnInit, OnDestroy {
     this.socket.on('likePage', async (like: any) => {
       await this.getAllPost(1)
     });
+
+    this.socket.on('deletePage', async (like: any) => {
+      await this.getAllPost(1)
+    });
+
+    this.userId = await this.storage.get('userId');
 
   }
 

@@ -3,6 +3,7 @@ const Comments = require('../models/comments');
 const Post = require('../models/post');
 const async = require('async');
 const checkJwt = require('../middlewares/check-jwt');
+const _ = require('lodash');
 
 router.route('/likes/:id')
     .post(checkJwt, (req, res) => {
@@ -11,6 +12,7 @@ router.route('/likes/:id')
             if (err) return err;
 
             post.likes.push(req.decoded.user._id);
+            post.totalLikes++
             post.save();
             res.status(200).json({
                 success: true,
@@ -76,12 +78,41 @@ router.route('/likes/:id')
 
             const index = post.likes.indexOf(userId);
             post.likes.splice(index, 1);
+            post.totalLikes--
             post.save();
             res.json({
                 success: true,
                 message: "You unliked a post"
             });
         });
+    });
+
+    router.delete('/deleteComment/:id', checkJwt, (req, res) => {
+        const postId = req.params.id;
+        const commentId = req.query.comment;
+        async.waterfall([
+            function (callback) {
+                Post.findOne({_id: postId}, (err, post) => {
+                    if (err) return err;
+
+                    const commentIndex = _.findIndex(post.comments, function(o) { return o._id == commentId; });
+                    post.comments.splice(commentIndex, 1);
+                    console.log(commentIndex)
+                    callback(err, post)
+                });
+            },
+            function (post) {
+                Comments.findByIdAndRemove(commentId, (err) => {
+                    if (err) return err;
+
+                    post.save();
+                    res.json({
+                        success: true,
+                        message: 'Comment successfully deleted'
+                    });
+                });
+            }
+        ]);
     });
 
     module.exports = router;

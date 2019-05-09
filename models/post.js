@@ -13,6 +13,7 @@ const PostSchema = new Schema({
         createdAt: {type: Date, default: Date.now} 
     }],
     likes: [{type: Schema.Types.ObjectId, ref: 'User'}],
+    totalLikes: {type: Number, default: 0},
     isLiked: {type: Boolean, default: false},
     isCommented: {type: Boolean, default: false}
 });

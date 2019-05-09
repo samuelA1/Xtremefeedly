@@ -16,6 +16,11 @@
             <ion-label>You don't have any comment yet</ion-label>
           </ion-list-header>
       <ion-item *ngFor="let comment of comments">
+        <ion-buttons slot="end" *ngIf="comment.commentOwner._id == userId">
+              <ion-button  color="danger" (click)="removeComment(comment._id)">
+                  <ion-icon name="arrow-dropdown"></ion-icon>
+              </ion-button>
+        </ion-buttons>
         <ion-avatar slot="start">
           <img src="https://res.cloudinary.com/daydy3tvk/image/upload/v{{comment.commentOwner.picVersion}}/{{comment.commentOwner.picId}}">
         </ion-avatar>

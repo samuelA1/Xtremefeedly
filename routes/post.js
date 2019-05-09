@@ -53,7 +53,18 @@ router.route('/posts')
                 Post.count({}, (err, count) => {
                     callback(err, count)
                 });
-            }
+            },
+            function (callback) {
+                Post.find({totalLikes:{$gte:2}})
+                .sort({createdAt: -1})
+                .populate('owner')
+                .exec((err, topPosts) => {
+                    if (err) return err;
+
+                    callback(err, topPosts);
+                });
+
+            },
         ], function (err, results) {
             if (err) return err;
 
@@ -80,11 +91,34 @@ router.route('/posts')
                 }
             });
             let postCount = results[1];
+            let topPosts = results[2];
+            topPosts.forEach(post => {
+                if (post['comments']) {
+                    post['comments'].forEach(comment => {
+                        if (comment['commentOwner'] == req.decoded.user._id) {
+                            post.isCommented = true;
+                        } else {
+                            post.isCommented = false;
+                        }
+                    })
+                }
+
+                if (post['likes']) {
+                    post['likes'].forEach(like => {
+                        if (like == req.decoded.user._id) {
+                            post.isLiked = true;
+                        } else {
+                            post.isLiked = false;
+                        }
+                    })
+                }
+            });
             let totalPages = Math.ceil(postCount / perPage);
             res.status(200).json({
                 success: true,
                 posts: posts,
                 totalPosts: postCount,
+                topPosts:topPosts,
                 totalPages: totalPages
             });
         });
@@ -124,6 +158,17 @@ router.route('/posts')
             });
         })
         
+    });
+
+    router.delete('/deletePost/:id', checkJwt, (req, res) => {
+        Post.findByIdAndRemove(req.params.id, (err) => {
+            if(err) return err;
+
+            res.json({
+                success: true,
+                message: 'Post successfully deleted'
+            })
+        })
     });
 
 

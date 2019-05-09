@@ -11,5 +11,13 @@ module.exports = function (io) {
         socket.on('like', data => {
             io.emit('likePage', data);
         });
+
+        socket.on('delete', data => {
+            io.emit('deletePage', data);
+        });
+
+        socket.on('deleteComment', data => {
+            io.emit('deleteCommentPage', data);
+        });
     });
 }

@@ -28,6 +28,11 @@
       <ion-avatar slot="start">
         <img src="https://res.cloudinary.com/daydy3tvk/image/upload/v{{post.owner.picVersion}}/{{post.owner.picId}}">
       </ion-avatar>
+      <ion-buttons slot="end" *ngIf="post.owner._id == userId">
+        <ion-button  color="danger" (click)="deletePost(post._id)">
+            <ion-icon name="arrow-dropdown"></ion-icon>
+        </ion-button>
+      </ion-buttons>
       <ion-label>
         <h2>{{post.owner.username | titlecase}}</h2>
         <h3>{{post.post}}</h3>
@@ -47,33 +52,38 @@
     </ion-item>
   </ion-list>
 
-  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
-      <ion-infinite-scroll-content
-        loadingSpinner="bubbles"
-        loadingText="Loading more post...">
-      </ion-infinite-scroll-content>
-  </ion-infinite-scroll>
-
-      <ion-list class="ios list-ios hydrated" *ngSwitchCase="'top'" lines="full">
-          <ion-item class="item ios in-list ion-focusable item-label hydrated">
-            <ion-avatar slot="start" class="ios hydrated">
-              <img src="http://placehold.it/2x2">
-            </ion-avatar>
-            <ion-label class="sc-ion-label-ios-h sc-ion-label-ios-s ios hydrated">
-              <h2>Finn</h2>
-              <h3>I'm a big deal</h3>
-              <p>Listen, I've had a pretty messed up day...</p>
-              <ion-row>
-                  <ion-col>
-                    <ion-icon name="thumbs-up"></ion-icon><span style="font-size: 12px">10</span>
-                  </ion-col>
-                  <ion-col>
-                      <ion-icon name="text"></ion-icon><span style="font-size: 12px">10</span>
-                  </ion-col>
-                </ion-row>
-            </ion-label>
-          </ion-item>
-        </ion-list>
+  <ion-list class="ios list-ios hydrated" *ngSwitchCase="'top'" lines="full">
+      <ion-list-header *ngIf="topPosts?.length == 0">
+          <ion-label>You don't have any top post yet</ion-label>
+        </ion-list-header>
+    <ion-item *ngFor="let post of topPosts">
+      <ion-buttons slot="end" *ngIf="post.owner._id == userId">
+            <ion-button  color="danger" (click)="deletePost(post._id)">
+                <ion-icon name="arrow-dropdown" ></ion-icon>
+            </ion-button>
+          </ion-buttons>
+      <ion-avatar slot="start">
+        <img src="https://res.cloudinary.com/daydy3tvk/image/upload/v{{post.owner.picVersion}}/{{post.owner.picId}}">
+      </ion-avatar>
+      
+      <ion-label>
+        <h2>{{post.owner.username | titlecase}}</h2>
+        <h3>{{post.post}}</h3>
+        <ion-img *ngIf="post.imgId"  class="image-responsive" src="https://res.cloudinary.com/daydy3tvk/image/upload/v{{post.imgVersion}}/{{post.imgId}}"></ion-img>
+        <p>{{GetPostTime(post.createdAt)}}</p>
+        <ion-row>
+            <ion-col>
+              <ion-icon name="thumbs-up" class="likeThump" [class.isLiked]="post.isLiked"  (click)="likePost(post._id, post)"></ion-icon>
+              <span *ngIf="post.likes?.length !== 0" [class.isLiked]="post.isLiked" style="font-size: 12px">{{post.likes?.length}}</span>
+            </ion-col>
+            <ion-col>
+                <ion-icon name="text" class="comment" [class.isCommented]="post.isCommented" (click)="callCommentModal(post._id, post)"></ion-icon>
+                <span *ngIf="post.comments?.length !== 0" [class.isCommented]="post.isCommented" style="font-size: 12px">{{post.comments?.length}}</span>
+            </ion-col>
+          </ion-row>
+      </ion-label>
+    </ion-item>
+  </ion-list>
 
       
           <!-- animations -->
@@ -273,4 +283,11 @@
           </ion-label>
         </ion-item>
       </ion-list>
+
+      <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
+          <ion-infinite-scroll-content
+            loadingSpinner="bubbles"
+            loadingText="Loading more post...">
+          </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
 </ion-content>

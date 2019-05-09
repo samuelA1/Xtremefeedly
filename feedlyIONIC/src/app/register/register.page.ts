@@ -84,6 +84,10 @@ fabElement: any;
     return await alert.present();
   }
 
+  navigateBack() {
+    this.navCtrl.navigateRoot('login');
+  }
+
   async presentLoading() {
     this.loading = await this.loadingCtrl.create({
       message: 'Authenticating..',

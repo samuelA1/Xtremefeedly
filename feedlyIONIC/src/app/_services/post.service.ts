@@ -32,6 +32,10 @@ export class PostService {
     return this.http.get(url + `post/posts?page=${page - 1}`, {headers: await this.headers()}).toPromise();
   }
 
+  async deletePost(postId: any) {
+    return this.http.delete(url + `post/deletePost/${postId}`, {headers: await this.headers()}).toPromise();
+  }
+
   async likePost(postId: any) {
     return this.http.post(url + `likes/${postId}`, {}, {headers: await this.headers()}).toPromise();
   }
@@ -46,5 +50,9 @@ export class PostService {
 
   async getComments(postId: any) {
     return this.http.get(url + `comments/${postId}`, {headers: await this.headers()}).toPromise();
+  }
+
+  async deleteComment(postId: any, commentId: any) {
+    return this.http.delete(url + `deleteComment/${postId}?comment=${commentId}`, {headers: await this.headers()}).toPromise()
   }
 }

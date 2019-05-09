@@ -33,12 +33,10 @@ export class LoginPage implements OnInit {
             this.navCtrl.navigateForward('streams');
             this.storage.set('token', userInfo['token']);
           } else {
-            this.loading.dismiss();
             await this.presentAlert(userInfo['message']);
           }
         }    
       } catch (error) {
-        this.loading.dismiss();
         await this.presentAlert(error);
       }
     }
@@ -93,6 +91,7 @@ export class LoginPage implements OnInit {
 
   async presentLoading() {
     this.loading = await this.loadingCtrl.create({
+      duration: 1000,
       message: 'Authenticating..',
     });
     return await this.loading.present();
