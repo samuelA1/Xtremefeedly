@@ -1,0 +1,34 @@
+.alert-card {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    box-shadow: none !important;
+}
+
+.unread {
+    color: #c0c0c0 !important;
+  }
+
+  .read {
+    color: red;
+  }
+
+  .sender {
+    color: red;
+  }
+
+  .msg {
+    background: red;
+    border-radius: 50%;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    color: #ffffff;
+    font-weight: bold;
+    line-height: 1.5em;
+    text-align: center;
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+    padding: 7px 7px;
+    padding-top: -50px !important; 
+  }

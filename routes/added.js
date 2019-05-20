@@ -95,9 +95,8 @@ router.route('/likes/:id')
                 Post.findOne({_id: postId}, (err, post) => {
                     if (err) return err;
 
-                    const commentIndex = _.findIndex(post.comments, function(o) { return o._id == commentId; });
+                    const commentIndex = _.findIndex(post.comments, function(o) { return o.comment == commentId; });
                     post.comments.splice(commentIndex, 1);
-                    console.log(commentIndex)
                     callback(err, post)
                 });
             },

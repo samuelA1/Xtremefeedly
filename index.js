@@ -8,6 +8,7 @@ const authRoute = require('./routes/auth');
 const postRoute = require('./routes/post');
 const userRoute = require('./routes/user')
 const addedRoute = require('./routes/added');
+const messageRoute = require('./routes/message');
 
 mongoose.connect(config.db, {useNewUrlParser: true}, err => {
     err ? console.log('Can not connect to database') : console.log('Connected to database');
@@ -27,6 +28,7 @@ require('./socket')(io);
 app.use('/api/auth', authRoute);
 app.use('/api/post', postRoute);
 app.use('/api/profile', userRoute);
+app.use('/api/message', messageRoute);
 app.use('/api', addedRoute);
 
 

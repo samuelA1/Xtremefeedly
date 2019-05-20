@@ -8,6 +8,10 @@ const UserSchema = new Schema({
     password: String,
     picVersion: {type: String, default:'1556683453'},
     picId: {type: String, default:'image.jpg'},
+    chatList: [{
+        receiverId: {type: Schema.Types.ObjectId, ref: 'User'},
+        msgId: { type: mongoose.Schema.Types.ObjectId, ref: 'Message' }
+    }],
     images: [{
         imageVersion: {type: String, default:''},
         imageId: {type: String, default:''},

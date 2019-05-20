@@ -1,3 +1,4 @@
+import { UserService } from './../_services/user.service';
 import { Storage } from '@ionic/storage';
 import { AuthService } from '../_services/auth.service';
 import { Component, OnInit } from '@angular/core';
@@ -10,12 +11,12 @@ import { NavController, AlertController, LoadingController } from '@ionic/angula
 })
 export class LoginPage implements OnInit {
   user: any = {};
-  loading: any;
   tabElement: any;
   fabElement: any;
 
   constructor(private navCtrl: NavController,
-     private authService: AuthService, 
+     private authService: AuthService,
+     private userService: UserService, 
      private storage: Storage, 
      private alertCtrl: AlertController,
      private loadingCtrl: LoadingController) { 
@@ -29,7 +30,8 @@ export class LoginPage implements OnInit {
         if (this.validate(this.user )) {
           const userInfo = await this.authService.login(this.user);
           if (userInfo['success']) {
-            this.loading.dismiss();
+            const exp = await this.userService.getUserProfile();
+            this.storage.set('userId', exp['decoded'].user['_id']);
             this.navCtrl.navigateForward('streams');
             this.storage.set('token', userInfo['token']);
           } else {
@@ -90,11 +92,11 @@ export class LoginPage implements OnInit {
   }
 
   async presentLoading() {
-    this.loading = await this.loadingCtrl.create({
+    const loading = await this.loadingCtrl.create({
       duration: 1000,
       message: 'Authenticating..',
     });
-    return await this.loading.present();
+    return await loading.present();
   }
 
 }

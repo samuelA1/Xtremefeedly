@@ -17,7 +17,7 @@
           </ion-list-header>
       <ion-item *ngFor="let comment of comments">
         <ion-buttons slot="end" *ngIf="comment.commentOwner._id == userId">
-              <ion-button  color="danger" (click)="removeComment(comment._id)">
+              <ion-button  color="danger" (click)="removeComment(comment.comment._id)">
                   <ion-icon name="arrow-dropdown"></ion-icon>
               </ion-button>
         </ion-buttons>

@@ -7,6 +7,8 @@ const routes: Routes = [
   { path: 'streams', loadChildren: './streams/streams.module#StreamsPageModule' },
   { path: 'post-modal', loadChildren: './post-modal/post-modal.module#PostModalPageModule' },
   { path: 'comment-modal', loadChildren: './comment-modal/comment-modal.module#CommentModalPageModule' },
+  { path: 'chat', loadChildren: './chat/chat.module#ChatPageModule' },
+  { path: 'chat-list', loadChildren: './chat-list/chat-list.module#ChatListPageModule' },
 ];
 
 @NgModule({
